@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { os: windows-latest, r: 'beta', rtools: '35'}
-        - { os: windows-latest, r: 'beta', rtools: '40'}
-        - { os: macOS-latest, r: 'beta'}
+        - { os: windows-latest, r: 'devel', rtools: '35'}
+        - { os: windows-latest, r: 'devel', rtools: '40'}
+        - { os: macOS-latest, r: 'devel'}
         - { os: ubuntu-18.04, r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
     env:
@@ -53,15 +53,3 @@ jobs:
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
-
-      # - name: Upload check results
-      #   if: failure()
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-      #     path: check
-          
-#      - name: Test coverage
-#        if: matrix.config.os == 'macOS-latest' && matrix.config.r == 'release'
-#        run: Rscript -e 'install.packages("covr")' -e 'covr::codecov(type = "all", token = "${{secrets.CODECOV_TOKEN}}")'
-
