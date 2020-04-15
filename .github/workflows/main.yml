@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { os: windows-latest, r: 'devel', rtools: '35'}
-        - { os: windows-latest, r: 'devel', rtools: '40'}
-        - { os: macOS-latest, r: 'devel'}
+        - { os: windows-latest, r: 'beta', rtools: '35'}
+        - { os: windows-latest, r: 'beta', rtools: '40'}
+        - { os: macOS-latest, r: 'beta'}
         - { os: ubuntu-18.04, r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
     env:
@@ -35,22 +35,21 @@ jobs:
           git config --global user.email "ghau@example.com"
           git config --global user.name "GitHub Actions User"
         
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
           
       - name: Setup R
         uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
-#          rtools-version: ${{ matrix.config.rtools }}
+          rtools-version: ${{ matrix.config.rtools }}
 
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies
         run: |
           Rscript -e "install.packages(c('BiocManager', 'remotes'))"
+          Rscript -e "BiocManager::install(c('rcmdcheck', 'rmarkdown', 'knitr', 'testthat', 'BiocStyle', 'bit64', 'microbenchmark', 'dplyr', 'ggplot2'))"
           Rscript -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6')"
-          Rscript -e "BiocManager::install(c('rcmdcheck', 'rmarkdown', 'knitr', 'testthat', 'BiocStyle',
-            'bit64', 'microbenchmark', 'dplyr', 'ggplot2'))"
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
