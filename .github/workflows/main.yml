@@ -21,7 +21,7 @@ jobs:
         config:
         - { os: windows-latest, r: '4.0', rtools: '35'}
         - { os: windows-latest, r: '4.0', rtools: '40'}
-        - { os: macOS-latest, r: 'devel'}
+        - { os: macOS-latest, r: '4.0'}
         - { os: ubuntu-18.04, r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
     env:
@@ -36,15 +36,8 @@ jobs:
           git config --global user.name "GitHub Actions User"
         
       - uses: actions/checkout@v2
-
-      - name: Setup R
-        if: runner.os != 'Windows'
-        uses: r-lib/actions/setup-r@master
-        with:
-          r-version: ${{ matrix.config.r }}
           
       - name: Setup R
-        if: runner.os == 'Windows'
         uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
@@ -54,7 +47,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Rscript -e "install.packages(c('BiocManager'))" -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6')"
+          Rscript -e "install.packages(c('BiocManager, 'remotes'))"
+          Rscript -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6')"
           Rscript -e "BiocManager::install(c('rcmdcheck', 'rmarkdown', 'knitr', 'testthat', 'BiocStyle',
             'bit64', 'microbenchmark', 'dplyr', 'ggplot2'))"
 
