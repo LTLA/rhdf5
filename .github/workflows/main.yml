@@ -41,13 +41,13 @@ jobs:
         uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
-          rtools-version: ${{ matrix.config.rtools }}
+#          rtools-version: ${{ matrix.config.rtools }}
 
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies
         run: |
-          Rscript -e "install.packages(c('BiocManager, 'remotes'))"
+          Rscript -e "install.packages(c('BiocManager', 'remotes'))"
           Rscript -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6')"
           Rscript -e "BiocManager::install(c('rcmdcheck', 'rmarkdown', 'knitr', 'testthat', 'BiocStyle',
             'bit64', 'microbenchmark', 'dplyr', 'ggplot2'))"
