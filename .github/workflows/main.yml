@@ -20,7 +20,7 @@ jobs:
       matrix:
         config:
         - { os: windows-latest, r: 'devel', rtools: '35'}
-        - { os: windows-latest, r: 'devel', rtools: '40'}
+       # - { os: windows-latest, r: 'devel', rtools: '40'}
         - { os: macOS-latest, r: 'devel'}
         - { os: ubuntu-18.04, r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
 
@@ -49,7 +49,7 @@ jobs:
         run: |
           Rscript -e "install.packages(c('BiocManager', 'remotes'))"
           Rscript -e "BiocManager::install(c('rcmdcheck', 'rmarkdown', 'knitr', 'testthat', 'BiocStyle', 'bit64', 'microbenchmark', 'dplyr', 'ggplot2'))"
-          Rscript -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6')"
+          Rscript -e "BiocManager::install('grimbough/Rhdf5lib', ref='1-10-6', INSTALL_opts = "--force-biarch")"
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
