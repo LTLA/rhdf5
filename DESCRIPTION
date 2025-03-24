@@ -19,8 +19,8 @@ Description: This package provides an interface between HDF5 and R.
     software package, and for letting R applications work on datasets that are 
     larger than the available RAM.
 License: Artistic-2.0
-URL: https://github.com/grimbough/rhdf5
-BugReports: https://github.com/grimbough/rhdf5/issues
+URL: https://github.com/Huber-group-EMBL/rhdf5
+BugReports: https://github.com/Huber-group-EMBL/rhdf5/issues
 LazyLoad: true
 VignetteBuilder: knitr
 Imports: Rhdf5lib (>= 1.13.4),
