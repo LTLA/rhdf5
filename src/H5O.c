@@ -132,6 +132,65 @@ SEXP _H5Oget_info( SEXP _object_id ) {
 }
 */
 
+SEXP _H5Oget_info( SEXP _object_id ) {
+  
+  hid_t object_id = STRSXP_2_HID( _object_id );
+  H5O_info_t info;
+  SEXP Rval;
+  
+  herr_t herr = H5Oget_info2( object_id, &info, H5O_INFO_ALL );
+  if(herr < 0) {
+    error("Unable to obtain object info\n");
+  }
+
+  const char *names[] = {"fileno", "atime", "mtime", "ctime", "btime", "num_attrs", "type", ""};
+  Rval = PROTECT(Rf_mkNamed(VECSXP, names));
+  
+  // timestamps
+  SEXP class = PROTECT(allocVector(STRSXP, 2));
+  SET_STRING_ELT(class, 0, mkChar("POSIXct"));
+  SET_STRING_ELT(class, 1, mkChar("POSIXt"));
+  
+  SEXP atime = PROTECT(Rf_ScalarReal(info.atime));
+  SEXP mtime = PROTECT(Rf_ScalarReal(info.mtime));
+  SEXP ctime = PROTECT(Rf_ScalarReal(info.ctime));
+  SEXP btime = PROTECT(Rf_ScalarReal(info.btime));
+  classgets(atime, class);
+  classgets(mtime, class);
+  classgets(ctime, class);
+  classgets(btime, class);
+  
+  //object type
+  SEXP obj_type = PROTECT(allocVector(STRSXP, 1));
+  switch(info.type) {
+  case H5O_TYPE_GROUP :
+    obj_type = mkString("GROUP");
+    break;
+  case H5O_TYPE_DATASET :
+    obj_type = mkString("DATASET");
+    break;
+  case H5O_TYPE_NAMED_DATATYPE :
+    obj_type = mkString("NAMED_DATATYPE");
+    break;
+  default :
+    obj_type = mkString("UNKNOWN TYPE");
+    break;
+  }
+  
+  SET_VECTOR_ELT(Rval, 0, Rf_ScalarInteger(info.fileno)); 
+  SET_VECTOR_ELT(Rval, 1, atime); 
+  SET_VECTOR_ELT(Rval, 2, mtime); 
+  SET_VECTOR_ELT(Rval, 3, ctime); 
+  SET_VECTOR_ELT(Rval, 4, btime); 
+  SET_VECTOR_ELT(Rval, 5, Rf_ScalarInteger(info.num_attrs)); 
+  SET_VECTOR_ELT(Rval, 6, obj_type); 
+  
+  UNPROTECT(7);
+
+  return Rval;
+}
+  
+
 /* herr_t H5Oget_info_by_name( hid_t loc_id, const char *object_name, H5O_info_t *object_info, hid_t lapl_id ) */
 /*
 SEXP _H5Oget_info_by_name( SEXP _loc_id, SEXP _object_name ) {
