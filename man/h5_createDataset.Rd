@@ -158,11 +158,12 @@ h5dump( h5File )
 ## Investigating fixed vs variable length string datasets
 
 ## create 1000 random strings with length between 50 and 100 characters
-words <- ceiling(runif(n = 1000, min = 50, max = 100)) |>
-vapply(FUN = \(x) {
- paste(sample(letters, size = x, replace = TRUE), collapse = "")
-},
-FUN.VALUE = character(1))
+words <- vapply(X = ceiling(runif(n = 1000, min = 50, max = 100)),
+                FUN = function(x) {
+                    paste(sample(letters, size = x, replace = TRUE), 
+                          collapse = "")
+                },
+                FUN.VALUE = character(1))
 
 ## create two HDF5 files
 f1 <- tempfile()

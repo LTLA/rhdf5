@@ -269,7 +269,7 @@ setMethod(f = "c",
               
               ## test all objects are H5Ref class
               valid <- vapply(elements, 
-                              FUN = \(x) { inherits(x, "H5Ref") }, 
+                              FUN = function(x) { inherits(x, "H5Ref") }, 
                               FUN.VALUE = logical(1L))
               if(!all(valid)) {
                 stop("All objects must be of class 'H5Ref'.", call. = FALSE)
@@ -299,7 +299,7 @@ setMethod(f = "c",
 #' @param i Integer vector giving the indices of references to select.
 #' 
 #' @export
-setMethod(f = "[", 
+setMethod(f = "[",
           signature = c("H5Ref", "ANY"),
           definition = function(x, i)  {
             
