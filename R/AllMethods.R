@@ -277,7 +277,7 @@ setMethod(f = "c",
               
               ## test all references are of same type
               types <- vapply(elements, 
-                              FUN = \(x) { x@type }, 
+                              FUN = function(x) { x@type }, 
                               FUN.VALUE = integer(1L))
               if(length(unique(types)) != 1) {
                 stop("All references must be of the same type.", call. = FALSE)
@@ -285,7 +285,7 @@ setMethod(f = "c",
               
               items <- unlist(lapply(
                 elements,
-                FUN = \(x) { x@val }
+                FUN = function(x) { x@val }
               ))
               object <- new("H5Ref", val = items, type = x@type)
             }
@@ -310,7 +310,8 @@ setMethod(f = "[",
             }
             
             i <- as.integer(i)
-            idx <- c(vapply(i, function(x) ((x-1L)*div)+(1L:div), FUN.VALUE = integer(length = div)))
+            idx <- c(vapply(i, function(x) ((x-1L)*div)+(1L:div), 
+                            FUN.VALUE = integer(length = div)))
             
             object <- new("H5Ref", val = x@val[idx], type = x@type)
             return(object)
