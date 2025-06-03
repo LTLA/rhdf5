@@ -1,6 +1,19 @@
 \name{NEWS}
 \title{News for Package 'rhdf5'}
 
+\section{Changes in version 2.54.0}{
+
+  \subsection{CHANGES}{
+    \itemize{
+      \item Disabled dataset timestamps, which were applied for compound 
+      datasets but not other types.  Back ported to 2.52.1.
+      (Thanks to Luke Zappia for reporting this 
+      https://github.com/Huber-group-EMBL/rhdf5/issues/160)
+    }
+  }
+
+}
+
 \section{Changes in version 2.52.0}{
 
   \subsection{CHANGES}{
@@ -18,7 +31,7 @@
       https://github.com/grimbough/rhdf5/issues/151).
       \item Addressed potential issued caused by undefined compiler behaviour
       when arrays of length zero were being created in C code.  Backported to
-      2.50.2 (Thanks to Prof B. Ripley for reporing this.)
+      2.50.2 (Thanks to Prof B. Ripley for reporting this.)
     }
   }
 }
