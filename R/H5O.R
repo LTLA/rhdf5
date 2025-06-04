@@ -180,3 +180,35 @@ H5Olink <- function( h5obj, h5loc, newLinkName, lcpl = NULL, lapl = NULL ) {
   }
 }
 
+#' Retrieves the metadata for an HDF5 object specified by an identifier. 
+#' 
+#' @param h5loc An object of class [H5IdComponent-class] representing an open
+#' HDF5 dataset or group.
+#'
+#' @examples 
+#' 
+#' ## Create a temporary copy of an example file check the contents
+#' example_file <- system.file("testfiles", "h5ex_t_array.h5", package="rhdf5")
+#' 
+#' ## open the example file, root group, and DS1 dataset
+#' fid <- H5Fopen( example_file )
+#' gid <- H5Gopen( fid, "/" )
+#' did <- H5Dopen( fid, "/DS1" )
+#' 
+#' ## List the available object information for both groups and datasets
+#' H5Oget_info(h5loc = gid)
+#' 
+#' H5Oget_info(h5loc = did)
+#' 
+#' ## close open handles
+#' h5closeAll(did, gid, fid)
+#' 
+#' @export
+H5Oget_info <- function( h5loc ) {
+  h5checktype(h5loc, "object")
+
+  res <- invisible(.Call("_H5Oget_info", h5loc@ID, PACKAGE='rhdf5'))
+  
+  return(res)
+}
+
