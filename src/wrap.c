@@ -70,6 +70,7 @@ static R_CallMethodDef libraryRCalls[] = {
   {"_H5Fget_create_plist", (DL_FUNC) &_H5Fget_create_plist, 1},
   {"_H5Fget_access_plist", (DL_FUNC) &_H5Fget_access_plist, 1},
   {"_H5Fget_name", (DL_FUNC) &_H5Fget_name, 1},
+  {"_H5Fget_intent", (DL_FUNC) &_H5Fget_intent, 1},
   {"_H5Gcreate", (DL_FUNC) &_H5Gcreate, 2},
   {"_H5Gcreate_anon", (DL_FUNC) &_H5Gcreate_anon, 1},
   {"_H5Gopen", (DL_FUNC) &_H5Gopen, 2},

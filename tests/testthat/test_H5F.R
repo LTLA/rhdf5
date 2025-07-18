@@ -104,6 +104,22 @@ test_that("H5Fget_filesize" , {
 H5Fclose(fid)
 
 ############################################################
+context("H5F intent")
+############################################################
+
+fid <- H5Fopen(name = h5File, flags = "H5F_ACC_RDONLY")
+test_that("H5Fget_intent reports read only", {
+  expect_equal( H5Fget_intent(h5file = fid),  "H5F_ACC_RDONLY")
+})
+H5Fclose(fid)
+
+fid <- H5Fopen(name = h5File, flags = "H5F_ACC_RDWR")
+test_that("H5Fget_intent reports read only", {
+  expect_equal( H5Fget_intent(h5file = fid),  "H5F_ACC_RDWR")
+})
+H5Fclose(fid)
+
+############################################################
 context("H5F plists")
 ############################################################
 

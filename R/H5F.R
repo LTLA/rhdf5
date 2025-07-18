@@ -185,41 +185,76 @@ H5Fget_access_plist <- function( h5file ) {
   h5checktype(h5file, "file")
   pid <- .Call("_H5Fget_access_plist", h5file@ID, PACKAGE='rhdf5')
   if (pid > 0) {
-    h5plist = new("H5IdComponent", ID = pid, native = h5file@native)
+    h5plist <- new("H5IdComponent", ID = pid, native = h5file@native)
   } else {
     message("HDF5: unable to create property list")
-    h5plist = FALSE
+    h5plist <- FALSE
   }
   invisible(h5plist)
 }
 
-#' Retrieve the name of the file to which an object belongs
+#' Retermine the read only or read/write status of an open file handle.
+#'
+#' @param h5file An object of class [H5IdComponent-class] representing a H5
+#' file identifier.  Typically produced by [H5Fopen()] or [H5Fcreate()].
+#'
+#' @return Returns a character vector of length 1.  This will either be `H5F_ACC_RDWR` (read / write)
+#' or `H5F_ACC_READONLY` (read only).
 #' 
+#' @details The native `H5Fget_intent()` function can in theory also return the values `H5F_ACC_SWMR_WRITE`
+#' and `H5F_ACC_SWMR_READ`.  However these require the underlying HDF5 library to be complied with
+#' support for single-writer/multiple-reader (SWMR), which Rhdf5lib currently is not.  Hence only the two
+#' values detailed in the values section should be possible.
+#'
+#' @examples
+#'
+#' ## use an example file and show its location
+#' h5file <- system.file("testfiles", "h5ex_t_array.h5", package = "rhdf5")
+#' ## open the file as read only and check this
+#' fid <- H5Fopen(h5file, flags = "H5F_ACC_RDONLY")
+#' H5Fget_intent(fid)
+#' H5Fclose(fid)
+#'
+#' ## open file as read write and confirm
+#' fid <- H5Fopen(h5file, flags = "H5F_ACC_RDWR")
+#' H5Fget_intent(fid)
+#' H5Fclose(fid)
+#'
+#' @export
+H5Fget_intent <- function( h5file ) {
+  h5checktype(h5file, "file")
+  intent <- .Call("_H5Fget_intent", h5file@ID, PACKAGE = "rhdf5")
+  h5const2String("H5F_ACC_RD", intent)
+}
+
+
+#' Retrieve the name of the file to which an object belongs
+#'
 #' @param h5obj An object of class [H5IdComponent-class].  Despite this being
 #' an H5F function, it works equally well on H5 file, group, dataset and 
 #' attribute datatypes.
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' ## use an example file and show its location
 #' h5file <- system.file("testfiles", "h5ex_t_array.h5", package = "rhdf5")
 #' h5file
-#' 
+#'
 #' ## open a file handle and confirm we can identify the file it points to
 #' fid <- H5Fopen(h5file)
 #' H5Fget_name(fid)
-#' 
+#'
 #' ## H5Fget_name() can be applied to group and dataset handles too
 #' gid <- H5Gopen(fid, name = "/")
 #' did <- H5Dopen(fid, name = "DS1")
 #' H5Fget_name(gid)
 #' H5Fget_name(did)
-#' 
+#'
 #' ## tidy up
 #' H5Dclose(did)
 #' H5Gclose(gid)
 #' H5Fclose(fid)
-#' 
+#'
 #' @export
 H5Fget_name <- function( h5obj ) {
   h5checktype(h5obj, "object")
