@@ -138,7 +138,7 @@ h5createGroup <- function(file, group) {
 
 .createDCPL <- function(chunk, dims, level, fillValue, dtype, filter, shuffle = FALSE) {
   
-  dcpl <- H5Pcreate("H5P_DATASET_CREATE"); 
+  dcpl <- H5Pcreate("H5P_DATASET_CREATE")
   if (length(chunk) > 0) {
 
     if (!is.null(H5Tget_size(dtype))) { 

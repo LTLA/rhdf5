@@ -9,7 +9,8 @@
       datasets but not other types.  Back ported to 2.52.1.
       (Thanks to Luke Zappia for reporting this 
       https://github.com/Huber-group-EMBL/rhdf5/issues/160)
-      \item Exposed HDF5 API functions \code{H5Oget_info()}, \code{H5Fget_intent()}.
+      \item Exposed HDF5 API functions \code{H5Oget_info()}, \code{H5Fget_intent()}
+      \code{H5Dget_num_chunks()}.
       \item Added function \code{h5readTimestamps} to extract object timestamp
       metadata.
     }

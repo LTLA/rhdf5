@@ -19,9 +19,9 @@
 H5Dcreate <- function( h5loc, name, dtype_id, h5space, lcpl=NULL, dcpl=NULL, dapl=NULL ) {
   h5checktype(h5loc, "loc")
   if (length(name)!=1 || !is.character(name)) stop("'name' must be a character string of length 1")
-  ## dont check if we have an H5T identifier already    
+  ## dont check if we have an H5T identifier already
   if (!grepl(pattern = "^[[:digit:]]+$", dtype_id)) {
-    dtype_id<- h5checkConstants( "H5T", dtype_id)
+    dtype_id <- h5checkConstants( "H5T", dtype_id)
   }
   h5checktype(h5space, "dataspace")
   lcpl = h5checktypeAndPLC(lcpl, "H5P_LINK_CREATE", allowNULL = TRUE)
@@ -66,12 +66,12 @@ H5Dopen <- function( h5loc, name, dapl = NULL ) {
   h5checktype(h5loc, "loc")
   if (length(name)!=1 || !is.character(name)) stop("'filename' must be a character string of length 1")
   dapl = h5checktypeAndPLC(dapl, "H5P_DATASET_ACCESS", allowNULL = TRUE)
-  did <- .Call("_H5Dopen", h5loc@ID, name, dapl@ID, PACKAGE='rhdf5')
+  did <- .Call("_H5Dopen", h5loc@ID, name, dapl@ID, PACKAGE = 'rhdf5')
   if (as.numeric(did) > 0) {
-    h5dataset = new("H5IdComponent", ID = did, native = h5loc@native)
+    h5dataset <- new("H5IdComponent", ID = did, native = h5loc@native)
   } else {
     message("HDF5: unable to open dataset")
-    h5dataset = FALSE
+    h5dataset <- FALSE
   }
   invisible(h5dataset)
 }
@@ -293,4 +293,60 @@ H5Dset_extent <- function( h5dataset, size) {
     return(invisible(res >= 0))
 }
 
-    
+
+#' Get the number of chunks in a dataset
+#'
+#' Retrieves the number of chunks used by an HDF5 dataset.
+#' 
+#' Note, this function only returns the nubmer of chunks that actually have data written to them.  
+#' It does not return the theoretical number of chunks in a dataset or intersection with a 
+#' dataspace.  For example, if an empty dataset is created and but no values have been written 
+#' to it `H5Dget_num_chunks()` will return 0.  This can be seen in the examples below.
+#' 
+#' The C API also provides an optional parameter to constrain the query by providing a dataspace
+#' selection.  However this argument is not currently used at the C level and so is ommitted here.
+#'
+#' @param h5dataset An object of class [H5IdComponent-class] representing the dataset from which chunks will be counted.
+#'
+#' @return An integer value indicating the number of chunks present in the dataset or selected region.
+#' 
+#' @examples
+#' file <- tempfile(fileext = ".h5")
+#' fid <- H5Fcreate(file)
+#' 
+#' ## Create a dataset that will be represented by 4 chunks if complete
+#' h5createDataset(file, "data", dims = c(10, 10), chunk = c(5, 5), storage.mode = "integer")
+#' did <- H5Dopen(fid, "data")
+#' ## Here we return 0 chunks as no values have been written
+#' H5Dget_num_chunks(did)
+#' 
+#' ## Now write data to half the dataset
+#' h5writeDataset(obj = matrix(1:50, nrow = 10), h5loc = fid, name = "/data", index = list(1:10, 1:5))
+#' ## We now see it contains 2 chunks
+#' H5Dget_num_chunks(did)
+#' 
+#' ## Now write the complete dataset, overwriting the existing values
+#' h5writeDataset(obj = matrix(201:300, nrow = 10), h5loc = fid, name = "/data", index = NULL)
+#' ## We now see it contains 4 chunks
+#' H5Dget_num_chunks(did)
+#' 
+#' ## Tidy up op handles
+#' h5closeAll(did, fid)
+#'
+#' @export
+H5Dget_num_chunks <- function( h5dataset, h5space ) {
+  h5checktype(h5dataset, "dataset")
+
+  ## if no datasapce is provide we assume the intent is to list the number of chunks
+  ## in the dataset.  This is done by passing NULL here which will be interpreted
+  ## as H5S_ALL at the C-level
+  if(missing(h5space)) {
+    h5space <- H5Dget_space(h5dataset = h5dataset)
+    H5Sselect_all(h5space = h5space)
+    on.exit(H5Sclose(h5space))
+  }
+  
+  h5checktype(h5space, "dataspace")
+  res <- .Call("_H5Dget_num_chunks", h5dataset@ID, h5space@ID, PACKAGE = "rhdf5")
+  return(res)
+}
