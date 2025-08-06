@@ -9,3 +9,4 @@ BinaryFiles
 .github
 ^\.github$
 vignettes/practical_tips_cache
+.lintr

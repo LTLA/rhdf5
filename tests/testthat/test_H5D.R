@@ -67,3 +67,27 @@ test_that("we can change the size of a dataset", {
   H5Sclose(sid)
   
 })
+
+test_that("we can find the number of chunks used by a dataset", {
+
+  ## Create a dataset that will be represented by 4 chunks if complete
+  h5createDataset(h5File, "data", dims = c(10, 10), chunk = c(5, 5), storage.mode = "integer")
+
+  fid <- H5Fopen(h5File)
+  did <- H5Dopen(fid, "/data")
+  ## Here we return 0 chunks as no values have been written
+  expect_equal(H5Dget_num_chunks(did), 0L)
+
+  ## Now write data to half the dataset
+  h5writeDataset(obj = matrix(1:50, nrow = 10), h5loc = fid, name = "/data", index = list(1:10, 1:5))
+  ## We now see it contains 2 chunks
+  expect_equal(H5Dget_num_chunks(did), 2L)
+
+  ## Now writing the complte dataset, overwriting the existing values
+  h5writeDataset(obj = matrix(201:300, ncol = 10), h5loc = fid, name = "/data", index = NULL)
+  ## We now see it contains 4 chunks
+  expect_equal(H5Dget_num_chunks(did), 4L)
+
+  ## Tidy up op handles
+  h5closeAll(did, fid) 
+})
