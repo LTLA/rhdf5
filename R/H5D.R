@@ -334,17 +334,15 @@ H5Dset_extent <- function( h5dataset, size) {
 #' h5closeAll(did, fid)
 #'
 #' @export
-H5Dget_num_chunks <- function( h5dataset, h5space ) {
+H5Dget_num_chunks <- function( h5dataset ) {
   h5checktype(h5dataset, "dataset")
 
-  ## if no datasapce is provide we assume the intent is to list the number of chunks
-  ## in the dataset.  This is done by passing NULL here which will be interpreted
-  ## as H5S_ALL at the C-level
-  if(missing(h5space)) {
-    h5space <- H5Dget_space(h5dataset = h5dataset)
-    H5Sselect_all(h5space = h5space)
-    on.exit(H5Sclose(h5space))
-  }
+  ## The C level API requires the dataset dataspace to be provided, even 
+  ## though the docs suggest making a selection on the dataspace currenrtly has 
+  ## no effect.
+  h5space <- H5Dget_space(h5dataset = h5dataset)
+  H5Sselect_all(h5space = h5space)
+  on.exit(H5Sclose(h5space))
   
   h5checktype(h5space, "dataspace")
   res <- .Call("_H5Dget_num_chunks", h5dataset@ID, h5space@ID, PACKAGE = "rhdf5")
