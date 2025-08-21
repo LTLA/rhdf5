@@ -1,16 +1,16 @@
 #' Test and set file locking for HDF5
 #' 
-#' HDF5 1.14.6 uses file locking by default.  On some file systems this is not
+#' HDF5 1.14 uses file locking by default.  On some file systems this is not
 #' available, and the HDF5 library will throw an error if the user attempts to
-#' create or access a file located on such a file system. These functions allow
+#' create or access a file located on such a file system.  These functions help
+#' identify if file locking is available without throwing an error, and allow
 #' the locking to be disabled for the duration of the R session if needed.
 #' 
-#' In previous versions of \pkg{rhdf5}, \code{h5testFileLocking} created a
-#' temporary HDF5 file and attempted to lock it in order to test the file locking
-#' capabilities of the current system. However, newer versions of the HDF5
-#' library no longer expose the locking functionality for this test. So,
-#' \code{h5testFileLocking} now just consults the #' \code{HDF5_USE_FILE_LOCKING}
-#' environment variable to see whether it is enabled.
+#' \code{h5testFileLocking} will create a temporary file and then attempt to
+#' apply a file lock using the appropriate function within the HDF5 library.
+#' The success or failure of the locking is then recorded and the temporary
+#' file removed.  Even relatively low level functions such as
+#' \code{\link{H5Fcreate}} will fail inelegantly if file locking fails.
 #' 
 #' \code{h5disableFileLocking} will set the environment variable
 #' \code{HDF5_USE_FILE_LOCKING=FALSE}, which is the recommended was to disable
@@ -26,10 +26,14 @@
 #' https://forum.hdfgroup.org/t/hdf5-files-on-nfs/3985/5
 #' 
 #' @aliases h5testFileLocking h5enableFileLocking h5disableFileLocking
-#' @param location Deprecated and ignored.
-#' @return \code{h5testFileLocking} returns a logical scalar indicating
-#' whether file locking is enabled.
-#' 
+#' @param location The name of a directory or file to test.  If an existing
+#' directory is provided a temporary file will be created in this folder.  If
+#' non-existant location is provided a file with the name will be created,
+#' tested for file locking, and then removed.  Providing an existing file will
+#' result in an error.
+#' @return \code{h5testFileLocking} returns \code{TRUE} if a file can be
+#' successfully locked at the specified location, or \code{FALSE} otherwise.
+#'
 #' \code{h5disableFileLocking} and \code{h5enableFileLocking} set are called
 #' for the side effect of setting or unsetting the environment variable
 #' \code{HDF5_USE_FILE_LOCKING} and do not return anything.
@@ -53,7 +57,7 @@
 #' @name h5_FileLocking
 #' @importFrom utils file_test
 #' @export h5testFileLocking
-h5testFileLocking <- function(location = NULL) {
+h5testFileLocking <- function(location) {
   if(missing(location)) {
     stop("You must provide a location to test.")
   }
