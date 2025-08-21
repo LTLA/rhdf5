@@ -53,7 +53,12 @@ https://forum.hdfgroup.org/t/hdf5-files-on-nfs/3985/5
 }
 \examples{
 
-h5testFileLocking()
+## either a file name or directory can be tested
+file <- tempfile()
+dir <- tempdir()
+
+h5testFileLocking(dir)
+h5testFileLocking(file)
 
 ## we can check for file locking, and disable if needed
 if( !h5testFileLocking(dir) ) {

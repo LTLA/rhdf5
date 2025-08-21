@@ -24,6 +24,7 @@
 #include "H5constants.h"
 #include "h5writeDataFrame.h"
 #include "printdatatype.h"
+#include "h5testLock.h"
 #include "external_filters.h"
 
 SEXP _H5open(void);
@@ -333,6 +334,7 @@ static R_CallMethodDef libraryRCalls[] = {
   {"_h5writeDataFrame", (DL_FUNC) &_h5writeDataFrame, 2},
   {"_h5createDataFrame", (DL_FUNC) &_h5createDataFrame, 5},
   {"_h5errorHandling", (DL_FUNC) &_h5errorHandling, 1},
+  {"_h5fileLock", (DL_FUNC) &_h5fileLock, 1},
   {"_h5listOpenObjects", (DL_FUNC) &_h5listOpenObjects, 1},
   {"_h5getEnumNames", (DL_FUNC) &_h5getEnumNames, 1},
   {"_h5getEnumValues", (DL_FUNC) &_h5getEnumValues, 1},

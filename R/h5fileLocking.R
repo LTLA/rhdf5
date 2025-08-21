@@ -38,7 +38,12 @@
 #' @keywords IO file
 #' @examples
 #' 
-#' h5testFileLocking()
+#' ## either a file name or directory can be tested
+#' file <- tempfile()
+#' dir <- tempdir()
+#' 
+#' h5testFileLocking(dir)
+#' h5testFileLocking(file)
 #' 
 #' ## we can check for file locking, and disable if needed
 #' if( !h5testFileLocking(dir) ) {
@@ -49,8 +54,28 @@
 #' @importFrom utils file_test
 #' @export h5testFileLocking
 h5testFileLocking <- function(location = NULL) {
-  # anything else gives defaults, according to https://support.hdfgroup.org/documentation/hdf5/latest/_file_lock.html
-  !(Sys.getenv("HDF5_USE_FILE_LOCKING", "1") %in% c("0", "FALSE"))
+  if(missing(location)) {
+    stop("You must provide a location to test.")
+  }
+  
+  ## stop if existing file passed
+  if(file_test("-f", location)) {
+    stop('Testing file locking will remove ', location, 
+         '\nPlease provide a directory or the name of a temporary file to be created.')
+  }
+  
+  ## passed an existing directory
+  if(file_test("-d", location)) {
+    file <- tempfile(tmpdir = location)
+  } else { ## location doesn't exist, we will create it
+    file <- location
+  }
+  
+  lock_status <- .Call("_h5fileLock", file, PACKAGE = "rhdf5")
+  
+  file.remove(file)
+  
+  return(lock_status)
 }
 
 #' @rdname h5_FileLocking
